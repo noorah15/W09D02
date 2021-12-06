@@ -5,52 +5,42 @@ import Signup from "./components/Signup";
 import Tasks from "./components/Tasks";
 import AdminTask from "./components/AdminTask";
 import axios from "axios";
+import { login2 } from "./reducers/login";
+import { useDispatch, useSelector } from "react-redux";
 
 function App() {
-  const [login, setLogin] = useState(false);
-  const [role, setRole] = useState("");
-
-  useEffect(() => {
-    getRoles();
-  }, [login]);
-
-  const getRoles = async () => {
-    try {
-      const result = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/getRoles`
-      );
-
-      const role = localStorage.getItem("role");
-
-      const found = result.data.find((item) => {
-        return item._id === role;
-      });
-      if (!found) return;
-      if (found.role === "admin") setRole("admin");
-      else setRole("user");
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const dispatch = useDispatch();
+  const state = useSelector((state) => {
+    return state;
+  });
 
   return (
     <>
-      {!login ? (
+      {!localStorage.getItem("ID") ? (
         <>
           <Signup />
           <br />
           <hr />
           <br />
-          <Login setLogin={setLogin} />
+          <Login />
         </>
       ) : (
         <>
-          {role === "user" ? <Tasks /> : <AdminTask />}
+          {localStorage.getItem("role") === "61a48b1362b112055163b916" ? (
+            <Tasks />
+          ) : (
+            <AdminTask />
+          )}
 
           <button
             onClick={() => {
-              setLogin(false);
-              localStorage.clear();
+              const data = {
+                token: "",
+                role: "",
+                ID: "",
+              };
+
+              dispatch(login2(data));
             }}
           >
             logout{" "}
