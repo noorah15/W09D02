@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  setTasks,
+  addTaskReducers,
+  updateTaskReducers,
+} from "./../../reducers/tasks";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Tasks() {
-  const [items, setItems] = useState([]);
-  const [taskAdd, setTaskAdd] = useState("");
-  const [taskUpdate, setTaskUpdate] = useState("");
   const [createTask, setCreateTask] = useState(1);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  const dispatch = useDispatch();
+  const state = useSelector((state) => {
+    return state;
+  });
 
   useEffect(() => {
     getAllItems();
@@ -23,12 +30,16 @@ export default function Tasks() {
         `${process.env.REACT_APP_BASE_URL}/task/todos/${userId}`,
         {
           params: { userId: userId },
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
 
-      setItems(result.data);
-      console.log(result.data);
+      const data = {
+        items: result.data,
+      };
+
+      dispatch(setTasks(data));
+      //console.log(result.data);
     } catch (err) {
       console.log(err);
     }
@@ -38,13 +49,15 @@ export default function Tasks() {
     try {
       const userId = localStorage.getItem("ID");
       const id = localStorage.getItem("ID");
-      console.log(token);
+      console.log("the s  " + state.tasks.taskAdd);
       const result = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/task/create`,
-        { name: taskAdd, user: userId, userId, id },
-        { headers: { authorization: `Bearer ${token}` } }
+        { name: state.tasks.taskAdd, user: userId, userId, id },
+        {
+          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
-      console.log(result.data);
+      //console.log(result.data);
       setCreateTask(createTask + 1);
     } catch (err) {
       console.log(err);
@@ -56,8 +69,10 @@ export default function Tasks() {
       const id = localStorage.getItem("ID");
       const result = await axios.put(
         `${process.env.REACT_APP_BASE_URL}/task/todoUpdate`,
-        { taskId, userId, taskName: taskUpdate, id },
-        { headers: { authorization: `Bearer ${token}` } }
+        { taskId, userId, taskName: state.tasks.taskUpdate, id },
+        {
+          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       console.log(result.data);
       setCreateTask(createTask + 1);
@@ -73,7 +88,7 @@ export default function Tasks() {
         `${process.env.REACT_APP_BASE_URL}/task/todoDel`,
         {
           data: { userId, taskId, id },
-          headers: { authorization: `Bearer ${token}` },
+          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
       console.log(result.data);
@@ -89,18 +104,30 @@ export default function Tasks() {
       <input
         type="text"
         name="task"
-        onChange={(e) => setTaskAdd(e.target.value)}
+        onChange={(e) => {
+          const data = {
+            items1: state.tasks.items,
+            taskAdd: e.target.value,
+          };
+          dispatch(addTaskReducers(data));
+        }}
       />
       <button onClick={() => addTask()}> Add </button>
 
       <h1>Tasks</h1>
-      {items.map((item) => (
+      {state.tasks.items.map((item) => (
         <>
           <h1>{item.name}</h1>
           <input
             type="text"
             name="task"
-            onChange={(e) => setTaskUpdate(e.target.value)}
+            onChange={(e) => {
+              const data = {
+                items2: state.tasks.items,
+                taskUpdate: e.target.value,
+              };
+              dispatch(updateTaskReducers(data));
+            }}
           />
           <button onClick={() => updateTask(item._id, item.user)}>
             {" "}

@@ -5,7 +5,7 @@ import Signup from "./components/Signup";
 import Tasks from "./components/Tasks";
 import AdminTask from "./components/AdminTask";
 import axios from "axios";
-import { login2 } from "./reducers/login";
+import { login2, logout2 } from "./reducers/login";
 import { useDispatch, useSelector } from "react-redux";
 
 function App() {
@@ -40,7 +40,7 @@ function App() {
                 ID: "",
               };
 
-              dispatch(login2(data));
+              dispatch(logout2(data));
             }}
           >
             logout{" "}

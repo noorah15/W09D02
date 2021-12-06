@@ -55,10 +55,11 @@ export default function Tasks() {
   const addTask = async () => {
     try {
       const userId = localStorage.getItem("ID");
+      const id = localStorage.getItem("ID");
       console.log(token);
       const result = await axios.post(
         `${process.env.REACT_APP_BASE_URL}/task/create`,
-        { name: taskAdd, user: user, userId },
+        { name: taskAdd, user: user, userId, id },
         { headers: { authorization: `Bearer ${token}` } }
       );
       console.log(result.data);
